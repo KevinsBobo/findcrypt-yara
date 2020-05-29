@@ -1061,6 +1061,28 @@ rule RijnDael_AES_LONG
 		$c0
 }
 
+rule RijnDael_AES_LONG_inv
+{	meta:
+		author = "edeca"
+		description = "RijnDael AES"
+		date = "2019-10"
+	strings:
+		$c0 = { 52 09 6A D5 30 36 A5 38 BF 40 A3 9E 81 F3 D7 FB 7C E3 39 82 9B 2F FF 87 34 8E 43 44 C4 DE E9 CB }
+	condition:
+		$c0
+}
+
+rule RijnDael_AES_RCON
+{	meta:
+		author = "edeca"
+		description = "RijnDael AES round constants"
+		date = "2019-10"
+	strings:
+		$c0 = { 8D 01 02 04 08 10 20 40 80 1B 36 6C D8 AB 4D 9A }
+	condition:
+		$c0
+}
+
 rule RsaRef2_NN_modExp
 {	meta:
 		author = "Maxx"
@@ -1440,6 +1462,7 @@ rule TEA_DELTA2 {
 		date = "2016-02"
 	strings:
 		$c0 = { 9E 37 79 B9 }
+		$c1 = { 61 C8 86 47 }
 	condition:
 		any of them
 }
@@ -1451,6 +1474,7 @@ rule TEA_DELTA {
 		date = "2016-02"
 	strings:
 		$c0 = { B9 79 37 9E }
+		$c1 = { 47 86 C8 61 }
 	condition:
 		any of them
 }
