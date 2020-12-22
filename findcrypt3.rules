@@ -358,6 +358,35 @@ rule SHA1_Constants {
 		5 of them
 }
 
+rule SHA256_Constants {
+	meta:
+		author = "Andrew Williams (@recvfrom)"
+		description = "Look for SHA256 constants"
+		date = "2020-10"
+		version = "0.1"
+	strings:
+        $c_le_1 = { 6A09E667 }
+        $c_le_2 = { BB67AE85 }
+        $c_le_3 = { 3C6EF372 }
+        $c_le_4 = { A54FF53A }
+        $c_le_5 = { 510E527F }
+        $c_le_6 = { 9B05688C }
+        $c_le_7 = { 1F83D9AB }
+        $c_le_8 = { 5BE0CD19 }
+
+        $c_be_1 = { 67E6096A }
+        $c_be_2 = { 85AE67BB }
+        $c_be_3 = { 72F36E3C }
+        $c_be_4 = { 3AF54FA5 }
+        $c_be_5 = { 7F520E51 }
+        $c_be_6 = { 8C68059B }
+        $c_be_7 = { ABD9831F }
+        $c_be_8 = { 19CDE05B }
+
+	condition:
+		5 of ($c_be_*) or 5 of ($c_le_*)
+}
+
 rule SHA512_Constants {
 	meta:
 		author = "phoul (@phoul)"
@@ -1490,3 +1519,43 @@ rule TEA_SUM {
 		any of them
 }
 
+rule Sosemanuk
+{
+    /* Notes:
+     *
+     * - mul_a and mul_ia are commonly stored in a 4-byte value array, so
+     *   look for a 4-byte little endian equivalant also
+     *
+     * - mul_a and mul_ia start with four zero bytes, which is a fairly common
+     *   pattern in EXEs.  Including these bytes in the strings below is likely
+     *   worse for scan performance than omitting them, but I'm leaving them in
+     *   because findcrypt-yara leverages the yara API to map substring matches
+     *   to binary offsets (and then into virtual addresses), and the virtual
+     *   address for the start of these is likely to have more xrefs than the
+     *   the virtual address of (matching_offset + 4).  If, instead, better
+     *   performance is desired for your use case, just remove the zero bytes
+     *   from the strings below.
+     *
+     * Reference:
+     * - https://labs.sentinelone.com/enter-the-maze-demystifying-an-affiliate-involved-in-maze-snow/
+     */
+    strings:
+        $mul_a_be = {00 00 00 00 E1 9F CF 13 6B 97 37 26 8A 08 F8 35 [992] B5 5B 4D DE 54 C4 82 CD DE CC 7A F8 3F 53 B5 EB}
+        $mul_a_le = {00 00 00 00 13 CF 9F E1 26 37 97 6B 35 F8 08 8A [992] DE 4D 5B B5 CD 82 C4 54 F8 7A CC DE EB B5 53 3F}
+        $mul_ia_be = {00 00 00 00 18 0F 40 CD 30 1E 80 33 28 11 C0 FE [992] 9E E2 65 1C 86 ED 25 D1 AE FC E5 2F B6 F3 A5 E2}
+        $mul_ia_le = {00 00 00 00 CD 40 0F 18 33 80 1E 30 FE C0 11 28 [992] 1C 65 E2 9E D1 25 ED 86 2F E5 FC AE E2 A5 F3 B6}
+
+    condition:
+        any of them
+}
+
+rule salsa20 {
+	meta:
+		author = "eric"
+		description = "salsa20/chacha20 fixed words"
+		date = "2020-10"
+	strings:
+		$c0 = "expand 32-byte k" ascii
+	condition:
+		$c0
+}
